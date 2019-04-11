@@ -12,7 +12,7 @@ aux_source_directory(. APRILTAG_SRCS)
 add_library(apriltag SHARED ${APRILTAG_SRCS} ${COMMON_SRC})
 target_link_libraries(apriltag Threads::Threads m)
 file(GLOB_RECURSE HEADER_FILES RELATIVE ${CMAKE_SOURCE_DIR} *.h)
-set_target_properties(apriltag PROPERTIES SOVERSION 3 VERSION 3.0.0)
+set_target_properties(apriltag PROPERTIES SOVERSION 3 VERSION 3.0.1)
 
 
 # Examples
