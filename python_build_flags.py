@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy
 import sysconfig
 import re
 conf = sysconfig.get_config_vars()
@@ -10,6 +11,7 @@ c_flags.extend(conf.get('CC', '').split()[2:])
 c_flags.extend(conf.get('CFLAGS', '').split())
 c_flags.extend(conf.get('CCSHARED', '').split())
 c_flags.append('"-I{}"'.format(conf.get('INCLUDEPY', '')))
+c_flags.append('"-I{}"'.format(numpy.get_include()))
 #c_flags.append('-Wno-strict-prototypes')
 c_flags = [x for x in c_flags if not x.startswith('-O')]
 print(' '.join(c_flags), end=';')
