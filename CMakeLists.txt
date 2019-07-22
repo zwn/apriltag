@@ -65,6 +65,7 @@ install(FILES "${PROJECT_BINARY_DIR}/apriltag.pc" DESTINATION "lib/pkgconfig/")
 
 # Python wrapper
 execute_process(COMMAND which python3 OUTPUT_QUIET RESULT_VARIABLE Python3_NOT_FOUND)
+message(STATUS ${Python3_NOT_FOUND})
 if (NOT Python3_NOT_FOUND)
 # TODO deal with both python2/3
 execute_process(COMMAND python3 ${CMAKE_SOURCE_DIR}/python_build_flags.py OUTPUT_VARIABLE PY_OUT)
@@ -76,7 +77,7 @@ set(LIB_APRILTAG_PATH ${PROJECT_BINARY_DIR}/lib)
 
 foreach(X detect py_type)
 add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/apriltag_${X}.docstring.h
-    COMMAND < ${CMAKE_SOURCE_DIR}/apriltag_${X}.docstring sed 's/\"/\\\\\"/g\; s/^/\"/\; s/$$/\\\\n\"/\;' > apriltag_${X}.docstring.h
+    COMMAND < ${CMAKE_SOURCE_DIR}/apriltag_${X}.docstring python3 ${CMAKE_SOURCE_DIR}/python_to_string.py > apriltag_${X}.docstring.h
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endforeach()
 
