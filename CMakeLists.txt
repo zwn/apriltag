@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(apriltag)
 
+find_package(Threads REQUIRED)
 find_package(OpenCV QUIET)
 
 include_directories(.)
@@ -13,14 +14,12 @@ set(CMAKE_BUILD_TYPE Release)
 file(GLOB TAG_FILES ${CMAKE_SOURCE_DIR}/tag*.c)
 set_source_files_properties(SOURCE ${TAG_FILES} PROPERTIES COMPILE_FLAGS -O0)
 add_library(${PROJECT_NAME} SHARED ${APRILTAG_SRCS} ${COMMON_SRC} ${TAG_FILES})
+target_link_libraries(${PROJECT_NAME} Threads::Threads)
 if (MSVC)
-    # FindThreads will not find pthread.h with MSVC
     # winmm is necessary for __imp_timeGetTime
-    find_library(PTHREAD_LIBRARIES NAMES pthreads)
-    target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES} winmm)
+    target_link_libraries(${PROJECT_NAME} winmm)
 else()
-    find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} Threads::Threads m)
+    target_link_libraries(${PROJECT_NAME} m)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 3 VERSION 3.1.0)
