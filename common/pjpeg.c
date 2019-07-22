@@ -823,7 +823,7 @@ image_u8x3_t *pjpeg_to_u8x3_baseline(pjpeg_t *pj)
 // returns NULL if file loading fails.
 pjpeg_t *pjpeg_create_from_file(const char *path, uint32_t flags, int *error)
 {
-    FILE *f = fopen(path, "r");
+    FILE *f = fopen(path, "rb");
     if (f == NULL)
         return NULL;
 
