@@ -34,7 +34,9 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include <stdint.h>
 #include <inttypes.h>
 #include <ctype.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <math.h>
 
 #include "apriltag.h"
@@ -120,8 +122,7 @@ int main(int argc, char *argv[])
     for (int iter = 0; iter < maxiters; iter++) {
 
         int total_quads = 0;
-        int total_hamm_hist[hamm_hist_max];
-        memset(total_hamm_hist, 0, sizeof(total_hamm_hist));
+        int *total_hamm_hist = calloc(hamm_hist_max, sizeof(int));
         double total_time = 0;
 
         if (maxiters > 1)
@@ -129,8 +130,7 @@ int main(int argc, char *argv[])
 
         for (int input = 0; input < zarray_size(inputs); input++) {
 
-            int hamm_hist[hamm_hist_max];
-            memset(hamm_hist, 0, sizeof(hamm_hist));
+            int *hamm_hist = calloc(hamm_hist_max, sizeof(int));
 
             char *path;
             zarray_get(inputs, input, &path);
@@ -226,6 +226,7 @@ int main(int argc, char *argv[])
             printf("\n");
 
             image_u8_destroy(im);
+            free(hamm_hist);
         }
 
 
@@ -239,6 +240,7 @@ int main(int argc, char *argv[])
         printf("%5d", total_quads);
         printf("\n");
 
+        free(total_hamm_hist);
     }
 
     // don't deallocate contents of inputs; those are the argv
