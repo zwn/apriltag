@@ -10,13 +10,13 @@ c_flags.extend(conf.get('CC', '').split()[2:])
 c_flags.extend(conf.get('CFLAGS', '').split())
 c_flags.extend(conf.get('CCSHARED', '').split())
 c_flags.append('-I{}'.format(conf.get('INCLUDEPY', '')))
-c_flags.append('-Wno-strict-prototypes')
+#c_flags.append('-Wno-strict-prototypes')
 c_flags = [x for x in c_flags if not x.startswith('-O')]
 print(' '.join(c_flags), end=';')
 
 
 print('LINKER', end=';')
-print(conf.get('BLDSHARED', '').split()[0], end=';')
+#print(conf.get('BLDSHARED', '').split()[0], end=';')
 
 print('LDFLAGS', end=';')
 print(' '.join(conf.get('BLDSHARED', '').split()[1:]) + ' ' + conf.get('BLDLIBRARY', '') + ' ' + conf.get('LDFLAGS', ''), end=';')
