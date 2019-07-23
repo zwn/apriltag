@@ -93,6 +93,12 @@ set_target_properties(pyapriltag PROPERTIES OUTPUT_NAME "apriltag")
 install(
     TARGETS pyapriltag
     DESTINATION ${Python3_SITEARCH}
+    COMPONENT python
+)
+
+add_custom_target(pyinstall
+    DEPENDS pyapril
+    COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=python -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
 )
 
 #execute_process(COMMAND python3 -m site --user-site OUTPUT_VARIABLE PY_DEST)
