@@ -34,6 +34,7 @@
 #define FAMILY_STRING(name) "  " #name "\n"
 
 
+#if 0
 // Python is silly. There's some nuance about signal handling where it sets a
 // SIGINT (ctrl-c) handler to just set a flag, and the python layer then reads
 // this flag and does the thing. Here I'm running C code, so SIGINT would set a
@@ -55,6 +56,10 @@ do {                                                                    \
                        &sigaction_old, NULL ))                          \
         PyErr_SetString(PyExc_RuntimeError, "sigaction-restore failed"); \
 } while(0)
+#else
+#define SET_SIGINT()
+#define RESET_SIGINT()
+#endif
 
 #define PYMETHODDEF_ENTRY(function_prefix, name, args) {#name,          \
                                                         (PyCFunction)function_prefix ## name, \
