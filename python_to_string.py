@@ -1,5 +1,7 @@
 import sys
 
 for line in sys.stdin:
-	sys.stdout.write('"'+line.replace('"', '\\"')[:-1]+'"\n')
+    line = line.replace('\\', '\\\\')
+    line = line.replace('"', '\\"')
+    sys.stdout.write('"'+line[:-1]+'\\n"\n')
 
