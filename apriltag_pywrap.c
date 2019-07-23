@@ -303,7 +303,7 @@ static const char apriltag_type_docstring[] =
 
 static PyMethodDef apriltag_methods[] =
     { PYMETHODDEF_ENTRY(apriltag_, detect, METH_VARARGS),
-      {}
+      { 0, 0 }
     };
 
 static PyTypeObject apriltagType =
@@ -319,7 +319,7 @@ static PyTypeObject apriltagType =
 };
 
 static PyMethodDef methods[] =
-    { {}
+    { { 0, 0 }
     };
 
 
