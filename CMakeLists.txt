@@ -63,38 +63,41 @@ FILE(WRITE ${PROJECT_BINARY_DIR}/apriltag.pc ${PKGC_CONF})
 install(FILES "${PROJECT_BINARY_DIR}/apriltag.pc" DESTINATION "lib/pkgconfig/")
 
 
+
 # Python wrapper
-execute_process(COMMAND which python3 OUTPUT_QUIET RESULT_VARIABLE Python3_NOT_FOUND)
-message(STATUS ${Python3_NOT_FOUND})
-if (NOT Python3_NOT_FOUND)
-# TODO deal with both python2/3
-execute_process(COMMAND python3 ${CMAKE_SOURCE_DIR}/python_build_flags.py OUTPUT_VARIABLE PY_OUT)
-set(PY_VARS CFLAGS LDFLAGS LINKER EXT_SUFFIX)
-cmake_parse_arguments(PY "" "${PY_VARS}" "" ${PY_OUT})
-separate_arguments(PY_CFLAGS)
-separate_arguments(PY_LDFLAGS)
-set(LIB_APRILTAG_PATH ${PROJECT_BINARY_DIR}/lib)
 
 foreach(X detect py_type)
-add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/apriltag_${X}.docstring.h
-    COMMAND < ${CMAKE_SOURCE_DIR}/apriltag_${X}.docstring python3 ${CMAKE_SOURCE_DIR}/python_to_string.py > apriltag_${X}.docstring.h
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/apriltag_${X}.docstring.h
+    COMMAND < ${CMAKE_SOURCE_DIR}/apriltag_${X}.docstring ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/python_to_string.py > apriltag_${X}.docstring.h
+    #WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS apriltag_${X}.docstring
+    )
 endforeach()
 
-add_custom_command(OUTPUT apriltag_pywrap.o
-    COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS} ${PY_CFLAGS} -I${PROJECT_BINARY_DIR} -c -o apriltag_pywrap.o ${CMAKE_SOURCE_DIR}/apriltag_pywrap.c
-    DEPENDS ${CMAKE_SOURCE_DIR}/apriltag_pywrap.c ${PROJECT_BINARY_DIR}/apriltag_detect.docstring.h ${PROJECT_BINARY_DIR}/apriltag_py_type.docstring.h)
-add_custom_command(OUTPUT apriltag${PY_EXT_SUFFIX}
-    COMMAND ${PY_LINKER} ${PY_LDFLAGS} -Wl,-rpath=lib apriltag_pywrap.o ${LIB_APRILTAG_PATH}/libapriltag.so -o apriltag${PY_EXT_SUFFIX}
-    DEPENDS ${PROJECT_NAME} apriltag_pywrap.o)
-add_custom_target(apriltag_python ALL
-    DEPENDS apriltag${PY_EXT_SUFFIX})
+# find venv first
+set(Python3_FIND_REGISTRY "LAST" CACHE STRING "")
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
+Python3_add_library(pyapriltag MODULE
+    apriltag_pywrap.c
+    apriltag_detect.docstring.h
+    apriltag_py_type.docstring.h
+    )
+target_link_libraries(pyapriltag PRIVATE Python3::NumPy ${PROJECT_NAME})
+target_include_directories(pyapriltag
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
+set_target_properties(pyapriltag PROPERTIES OUTPUT_NAME "apriltag")
 
-execute_process(COMMAND python3 -m site --user-site OUTPUT_VARIABLE PY_DEST)
-string(STRIP ${PY_DEST} PY_DEST)
-install(CODE "execute_process(COMMAND cp ${PROJECT_BINARY_DIR}/apriltag${PY_EXT_SUFFIX} ${PY_DEST})")
+install(
+    TARGETS pyapriltag
+    DESTINATION ${Python3_SITEARCH}
+)
 
-endif (NOT Python3_NOT_FOUND)
+#execute_process(COMMAND python3 -m site --user-site OUTPUT_VARIABLE PY_DEST)
+#string(STRIP ${PY_DEST} PY_DEST)
+#install(CODE "execute_process(COMMAND cp ${PROJECT_BINARY_DIR}/apriltag${PY_EXT_SUFFIX} ${PY_DEST})")
 
 
 # Examples
