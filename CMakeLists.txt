@@ -62,9 +62,10 @@ STRING(REGEX REPLACE "^prefix=" "prefix=${CMAKE_INSTALL_PREFIX}" PKGC_CONF "${PK
 FILE(WRITE ${PROJECT_BINARY_DIR}/apriltag.pc ${PKGC_CONF})
 install(FILES "${PROJECT_BINARY_DIR}/apriltag.pc" DESTINATION "lib/pkgconfig/")
 
-
-
 # Python wrapper
+
+set(Python3_FIND_REGISTRY "LAST" CACHE STRING "")
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
 foreach(X detect py_type)
 add_custom_command(
@@ -77,8 +78,6 @@ add_custom_command(
 endforeach()
 
 # find venv first
-set(Python3_FIND_REGISTRY "LAST" CACHE STRING "")
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
 Python3_add_library(pyapriltag MODULE
     apriltag_pywrap.c
     apriltag_detect.docstring.h
