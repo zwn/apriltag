@@ -97,7 +97,7 @@ install(
 )
 
 add_custom_target(pyinstall
-    DEPENDS pyapril
+    DEPENDS pyapriltag
     COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=python -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
 )
 
